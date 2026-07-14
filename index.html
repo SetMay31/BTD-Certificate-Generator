@@ -696,6 +696,20 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     }
     .btn-clear-queue:hover { background: #fdf0ef; }
 
+    /* ══════════════ MOBILE ══════════════ */
+    @media (max-width: 540px) {
+      .generator { padding: 16px 12px 16px; }
+      .form-card { padding: 16px; overflow: hidden; }
+      .form-grid { grid-template-columns: 1fr; }
+      .form-group { min-width: 0; }
+      .form-grid input, .form-grid select, .form-grid textarea,
+      .form-grid .photo-upload-area, .form-grid .upload-drop-area { width: 100%; box-sizing: border-box; }
+      .illo-grid { grid-template-columns: 1fr; padding: 14px 16px 16px; }
+      .illo-card { overflow: hidden; }
+      .btn-add-module-group { flex-direction: column; }
+      .queue-actions { flex-direction: column; }
+    }
+
     /* ══════════════ PREVIEW SECTION ══════════════ */
     .preview-section { max-width: 920px; margin: 0 auto 48px; padding: 0 24px; }
     .preview-label { font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: #7a9aaa; margin-bottom: 10px; }
