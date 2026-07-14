@@ -696,8 +696,11 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     }
     .btn-clear-queue:hover { background: #fdf0ef; }
 
+    :root { --cert-scale: 0.74; }
+
     /* ══════════════ MOBILE ══════════════ */
     @media (max-width: 540px) {
+      :root { --cert-scale: 0.27; }
       .generator { padding: 16px 12px 16px; }
       .form-card { padding: 16px; overflow: hidden; }
       .form-grid { grid-template-columns: 1fr; }
@@ -713,7 +716,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     /* ══════════════ PREVIEW SECTION ══════════════ */
     .preview-section { max-width: 920px; margin: 0 auto 48px; padding: 0 24px; }
     .preview-label { font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: #7a9aaa; margin-bottom: 10px; }
-    .cert-scale-wrapper { position: relative; overflow: hidden; }
+    .cert-scale-wrapper { position: relative; overflow: hidden; height: calc(672px * var(--cert-scale)); }
 
     /* ══════════════════════════════════════════════════════
        CERTIFICATE  —  1176 × 672 px  (336 × 192 at 3.5×)
@@ -723,6 +726,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       background: #abbdc2;
       font-family: 'Montserrat', Arial, sans-serif;
       overflow: hidden; position: relative;
+      transform: scale(var(--cert-scale));
       transform-origin: top left;
       box-shadow: 0 8px 40px rgba(0,0,0,0.18);
     }
@@ -1786,12 +1790,10 @@ document.getElementById('f-module').addEventListener('change', function() {
    so the cert never overflows the right edge of the container
 ══════════════════════════════════════════════ */
 function scalePreview() {
-  const cert    = document.getElementById('certificate');
   const wrapper = document.getElementById('scale-wrapper');
   const avail   = (wrapper.clientWidth || 872) - 2;
   const scale   = Math.min(1, avail / CERT_W);
-  cert.style.transform = `scale(${scale})`;
-  wrapper.style.height = Math.round(CERT_H * scale) + 'px';
+  document.documentElement.style.setProperty('--cert-scale', scale);
 }
 
 /* ══════════════════════════════════════════════
@@ -1805,8 +1807,7 @@ async function downloadCert() {
   const cert    = document.getElementById('certificate');
   const wrapper = document.getElementById('scale-wrapper');
 
-  const savedTransform = cert.style.transform;
-  cert.style.transform = 'none';
+  document.documentElement.style.setProperty('--cert-scale', 1);
   wrapper.style.overflow = 'visible';
   wrapper.style.height = CERT_H + 'px';
 
@@ -1842,7 +1843,6 @@ async function downloadCert() {
     alert('PDF generation failed. Please check the console for details.');
   }
 
-  cert.style.transform = savedTransform;
   wrapper.style.overflow = 'hidden';
   scalePreview();
 
@@ -2048,8 +2048,7 @@ async function downloadAllPDFs() {
 
   const cert    = document.getElementById('certificate');
   const wrapper = document.getElementById('scale-wrapper');
-  const savedTransform = cert.style.transform;
-  cert.style.transform = 'none';
+  document.documentElement.style.setProperty('--cert-scale', 1);
   wrapper.style.overflow = 'visible';
   wrapper.style.height = CERT_H + 'px';
 
@@ -2104,7 +2103,6 @@ async function downloadAllPDFs() {
   if (activeSlot !== null && certQueue[activeSlot]) {
     await applyCertData(certQueue[activeSlot]);
   }
-  cert.style.transform = savedTransform;
   wrapper.style.overflow = 'hidden';
   scalePreview();
 
@@ -2243,8 +2241,10 @@ watermarkLoadFromStorage();  // restore watermark logo
 watermarkUpdateDisplay();    // render watermark (uploaded or fallback SVG)
 updateHeaderLogo();          // show watermark logo (or fallback) in header circle
 
-window.addEventListener('load',   scalePreview);
+new ResizeObserver(scalePreview).observe(document.getElementById('scale-wrapper'));
 window.addEventListener('resize', scalePreview);
+scalePreview();
+setTimeout(scalePreview, 200);
 </script>
 </body>
 </html>
