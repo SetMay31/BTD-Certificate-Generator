@@ -2235,16 +2235,23 @@ const EMBEDDED_WATERMARK = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAABIEAAA
 /* ══════════════════════════════════════════════
    INIT
 ══════════════════════════════════════════════ */
-updateQrDisplay();
-illoLoadFromStorage();       // restore module illustrations
-watermarkLoadFromStorage();  // restore watermark logo
-watermarkUpdateDisplay();    // render watermark (uploaded or fallback SVG)
-updateHeaderLogo();          // show watermark logo (or fallback) in header circle
+let _initDone = false;
+function _init() {
+  if (_initDone) { scalePreview(); return; }
+  _initDone = true;
+  illoLoadFromStorage();
+  watermarkLoadFromStorage();
+  watermarkUpdateDisplay();
+  updateHeaderLogo();
+  new ResizeObserver(scalePreview).observe(document.getElementById('scale-wrapper'));
+  window.addEventListener('resize', scalePreview);
+  scalePreview();
+}
 
-new ResizeObserver(scalePreview).observe(document.getElementById('scale-wrapper'));
-window.addEventListener('resize', scalePreview);
-scalePreview();
-setTimeout(scalePreview, 200);
+_init();
+requestAnimationFrame(_init);
+setTimeout(_init, 0);
+window.addEventListener('load', _init);
 </script>
 </body>
 </html>
