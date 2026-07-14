@@ -995,15 +995,6 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         </div>
       </div>
 
-      <div class="form-group">
-        <label>QR Code Image</label>
-        <div class="upload-drop-area" id="qr-drop-area">
-          <input type="file" id="f-qr" accept="image/*">
-          <div class="upload-drop-icon">⬜</div>
-          <span class="upload-drop-label" id="qr-upload-label">Drag & drop or click to upload QR code</span>
-          <span class="upload-drop-sub">PNG, JPG, SVG accepted</span>
-        </div>
-      </div>
 
       <div class="form-group">
         <label for="f-certno">Cert No</label>
@@ -1117,8 +1108,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
 
       <!-- QR — straddles photo right edge, size & position locked -->
       <div class="cert-qr-box" id="cert-qr">
-        <img id="cert-qr-img" src="" alt="QR Code">
-        <span class="qr-placeholder" id="qr-placeholder">Upload QR<br>image above</span>
+        <img id="cert-qr-img" src="" alt="QR Code" style="display:block;width:172px;height:172px;object-fit:contain;">
       </div>
 
       <!-- Info fields — single line "LABEL: Value" -->
@@ -1181,53 +1171,10 @@ const MODULES = {
 
 
 /* ══════════════════════════════════════════════
-   QR IMAGE UPLOAD
+   QR — fixed BTC website link, hardcoded
 ══════════════════════════════════════════════ */
-let qrImageDataUrl = null;
-
-function updateQrDisplay() {
-  const img = document.getElementById('cert-qr-img');
-  const placeholder = document.getElementById('qr-placeholder');
-  if (qrImageDataUrl) {
-    img.src = qrImageDataUrl;
-    img.style.display = 'block';
-    placeholder.style.display = 'none';
-  } else {
-    img.style.display = 'none';
-    placeholder.style.display = '';
-  }
-}
-
-document.getElementById('f-qr').addEventListener('change', function(e) {
-  const file = e.target.files[0]; if (!file) return;
-  const reader = new FileReader();
-  reader.onload = ev => {
-    qrImageDataUrl = ev.target.result;
-    document.getElementById('qr-upload-label').textContent = '✓ ' + file.name;
-    document.getElementById('qr-drop-area').classList.add('has-file');
-    updateQrDisplay();
-  };
-  reader.readAsDataURL(file);
-});
-
-// Drag-over highlight for QR drop area
-(function() {
-  const area = document.getElementById('qr-drop-area');
-  area.addEventListener('dragover',  e => { e.preventDefault(); area.classList.add('drag-over'); });
-  area.addEventListener('dragleave', () => area.classList.remove('drag-over'));
-  area.addEventListener('drop',      e => { e.preventDefault(); area.classList.remove('drag-over');
-    const file = e.dataTransfer.files[0]; if (!file) return;
-    document.getElementById('f-qr').files; // can't assign, use FileReader directly
-    const reader = new FileReader();
-    reader.onload = ev => {
-      qrImageDataUrl = ev.target.result;
-      document.getElementById('qr-upload-label').textContent = '✓ ' + file.name;
-      document.getElementById('qr-drop-area').classList.add('has-file');
-      updateQrDisplay();
-    };
-    reader.readAsDataURL(file);
-  });
-})();
+const BTC_QR_DATA_URL = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAUoAAAFKAQAAAABTUiuoAAACkUlEQVR4nO1bS4rcMBB9VS2YpQxzgDmKfIMcKWeaG9hH6QMMWMuATYUqSZ3uDgyexUQiUi3UkvUWD4r6q0lwUlY+iwQGlAcUA4pIWWb9sE4A0Z8liWuE61nh/xd6ERMAB9EciWSJRAgbgGBXWzNc+4Y6Wwm47Ka3fPQfThBfdyBOQHhvguuA8tOZ5uiAsF2EZr9XIPCJMHqHuofT4WR92zV4bf+KAA8ovqgtSQfzele3y/pD9UbqHb3exSa4DihyCqGi/u95yXIRWapz5e6hLltPklug8r/IfqUlrjyggKYV62TJu/nFg7DSi8hiu6kprp1DXVKPbkTDk6xvFqhe0zWF7Si5PNfmyt1DXf71H47gdy21VD04SNbZajArv3RTnSt3D0XKMrRvkToaS/pmWYYBNNXwelGdK3cPRdKRiFqPmlCwXbrIR1lGTtgGFA8W9beVLWpW6ci1uXL3UJgJZTuyAisZWO7lZqMbttUGFNlwvDo8SybKku3NPOGIW81AI5EVXfRTjUl1lEX1tk63hgY3wLVzKEqMUl9XYlTuPJXMw1JEGbaF6lAkVVjKfv+ttA1T8j7iVjNQX1J2VUra2tjEJBdd30pgQE+L5Eq4lMOaDt7P91WDdlyqc+XuoSjllKnHgpcFqicXOTxhE9p6ePOkc5JwdaD59kJD30Hl1J4b4No51KnhlOZtnPQ9jTXid5C+nRFE7dD7JrgOqLt/86RzSe28U7hSUVTRJepz5QHFndgrQtGxsc5OSAvjsB1k70DRGNfPhTuAepEcqOJLShFTa0NjGRrj2iXU2Voq4/TSSSi86zRyAol5wlR+cW2u3D3UlUm/SsoyDrKZP8Jmx0szXLl7KI1/BGFATwsPKE7Lb7Vck0BeS8crAAAAAElFTkSuQmCC';
+document.getElementById('cert-qr-img').src = BTC_QR_DATA_URL;
 
 /* ══════════════════════════════════════════════
    ILLUSTRATION UPLOADS — persisted in localStorage
@@ -1930,12 +1877,6 @@ function clearInfo() {
   thumb.src = ''; thumb.style.display = 'none';
   document.getElementById('upload-label').textContent = 'Click or drag to upload photo';
 
-  // QR
-  qrImageDataUrl = null;
-  document.getElementById('qr-upload-label').textContent = 'Drag & drop or click to upload QR code';
-  document.getElementById('qr-drop-area').classList.remove('has-file');
-  updateQrDisplay();
-
   // Queue
   certQueue = []; activeSlot = null;
   renderQueuePanel();
@@ -1960,7 +1901,7 @@ function getCurrentCertData() {
     cd:           document.getElementById('f-certdate').value,
     inst:         document.getElementById('f-instructor').value,
     body:         document.getElementById('f-bodytext').value.trim(),
-    photoDataUrl, qrDataUrl: qrImageDataUrl,
+    photoDataUrl,
     cropX, cropY, cropScale, naturalW, naturalH
   };
 }
@@ -2009,16 +1950,6 @@ function applyDataToForm(data) {
     document.getElementById('upload-label').textContent = 'Click or drag to upload photo';
   }
 
-  // QR
-  qrImageDataUrl = data.qrDataUrl || null;
-  if (qrImageDataUrl) {
-    document.getElementById('qr-upload-label').textContent = '✓ QR loaded';
-    document.getElementById('qr-drop-area').classList.add('has-file');
-  } else {
-    document.getElementById('qr-upload-label').textContent = 'Drag & drop or click to upload QR code';
-    document.getElementById('qr-drop-area').classList.remove('has-file');
-  }
-  updateQrDisplay();
   updateCert();
 }
 
@@ -2029,11 +1960,11 @@ function addNewModule(copyStudent) {
   const newSlot = copyStudent
     ? { module: '', name: prev.name, bd: prev.bd, certno: prev.certno,
         cd: prev.cd, inst: prev.inst, body: '',
-        photoDataUrl: prev.photoDataUrl, qrDataUrl: prev.qrDataUrl,
+        photoDataUrl: prev.photoDataUrl,
         cropX: prev.cropX, cropY: prev.cropY, cropScale: prev.cropScale,
         naturalW: prev.naturalW, naturalH: prev.naturalH }
     : { module: '', name: '', bd: '', certno: '', cd: '', inst: '', body: '',
-        photoDataUrl: null, qrDataUrl: null,
+        photoDataUrl: null,
         cropX: 0, cropY: 0, cropScale: 1, naturalW: 0, naturalH: 0 };
   certQueue.push(newSlot);
   activeSlot = certQueue.length - 1;
